@@ -1365,6 +1365,17 @@ proxy.on("proxyReqWs", (_proxyReq, req) => {
   attachGatewayAuthHeader(req);
 });
 
+// OAuth proxy — bypass dashboard auth so Gmail OAuth callback reaches the Python server.
+const OAUTH_PORT = Number.parseInt(process.env.OAUTH_PORT ?? "8081", 10);
+const oauthProxy = httpProxy.createProxyServer({ target: `http://127.0.0.1:${OAUTH_PORT}` });
+oauthProxy.on("error", (err, _req, res) => {
+  console.error("[oauth-proxy]", err);
+  res.status(502).type("text/plain").send("OAuth server unavailable");
+});
+app.use(["/oauth/start", "/oauth/callback"], (req, res) => {
+  oauthProxy.web(req, res);
+});
+
 app.use(requireDashboardAuth, async (req, res) => {
   // If not configured, force users to /setup for any non-setup routes.
   if (!isConfigured() && !req.path.startsWith("/setup")) {
