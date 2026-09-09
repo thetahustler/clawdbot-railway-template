@@ -175,6 +175,14 @@ docker run --rm -p 8080:8080 \
 
 ---
 
+## Live operator playbooks
+
+Hygiene against an already-running Railway volume (SecretRefs, Telegram
+`defaultAccount`, cron `agent_id`) is documented in
+[`docs/ops/stock-defaults-hygiene.md`](docs/ops/stock-defaults-hygiene.md).
+That playbook is **operator-run** and must not be executed by unattended
+agents against production.
+
 ## Official template / endorsements
 
 - Officially recommended by OpenClaw: <https://docs.openclaw.ai/railway>
